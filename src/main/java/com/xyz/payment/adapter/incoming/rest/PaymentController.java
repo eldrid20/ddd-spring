@@ -29,12 +29,16 @@ public class PaymentController {
         return processor.createPayment(CreatePaymentCommand.of(paymentDto.getAmount()));
     }
 
-    @PutMapping(value = "/v1/payments/{paymentId}/items")
+    @PutMapping(value = "/v1/payments/{paymentId}/items",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public Payment addPaymentItem(@PathVariable Long paymentId, @RequestBody @Valid PaymentDto paymentDto){
         return processor.addPaymentItem(AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
     }
 
-    @PutMapping(value = "/v1/payments/{paymentId}/complete")
+    @PutMapping(value = "/v1/payments/{paymentId}/complete",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public Payment completePaymentItem(@PathVariable Long paymentId){
         return processor.completePayment(CompletePaymentCommand.of(paymentId));
     }
