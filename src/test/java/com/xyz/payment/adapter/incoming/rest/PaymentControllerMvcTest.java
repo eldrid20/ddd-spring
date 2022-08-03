@@ -50,7 +50,7 @@ class PaymentControllerMvcTest {
         when(processor.createPayment(createPayment)).thenReturn(expectedPaymentResponse);
 
         //when
-        final var response = this.mockMvc.perform(post("/payments")
+        final var response = this.mockMvc.perform(post("/v1/payments")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(paymentDto)))
                 .andExpect(status().isOk())
@@ -70,7 +70,7 @@ class PaymentControllerMvcTest {
         when(processor.addPaymentItem(addPaymentItemCommand)).thenReturn(expectedPaymentResponse);
 
         //when
-        final var response = this.mockMvc.perform(put("/payments/"+PAYMENT_ID+"/items")
+        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/items")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(paymentDto)))
                 .andExpect(status().isOk())
@@ -90,7 +90,7 @@ class PaymentControllerMvcTest {
         when(processor.completePayment(completePaymentCommand)).thenReturn(expectedPaymentResponse);
 
         //when
-        final var response = this.mockMvc.perform(put("/payments/"+PAYMENT_ID+"/complete")
+        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(paymentDto)))
                 .andExpect(status().isOk())

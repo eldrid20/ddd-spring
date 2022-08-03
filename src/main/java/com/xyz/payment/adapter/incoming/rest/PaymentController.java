@@ -34,7 +34,7 @@ public class PaymentController {
         return processor.addPaymentItem(AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
     }
 
-    @PutMapping(value = "/payments/{paymentId}/complete")
+    @PutMapping(value = "/v1/payments/{paymentId}/complete")
     public Payment completePaymentItem(@PathVariable Long paymentId){
         return processor.completePayment(CompletePaymentCommand.of(paymentId));
     }

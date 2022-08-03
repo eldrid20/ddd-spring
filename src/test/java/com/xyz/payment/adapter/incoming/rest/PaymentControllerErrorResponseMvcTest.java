@@ -49,7 +49,7 @@ class PaymentControllerErrorResponseMvcTest {
         paymentDto.setAmount(null);
 
         //when
-        final var response = this.mockMvc.perform(post("/payments")
+        final var response = this.mockMvc.perform(post("/v1/payments")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(paymentDto)))
                 .andExpect(status().isBadRequest())
@@ -71,7 +71,7 @@ class PaymentControllerErrorResponseMvcTest {
         paymentDto.setAmount(null);
 
         //when
-        final var response = this.mockMvc.perform(put("/payments/"+PAYMENT_ID+"/items")
+        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/items")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(paymentDto)))
                 .andExpect(status().isBadRequest())
@@ -91,7 +91,7 @@ class PaymentControllerErrorResponseMvcTest {
         Mockito.when(processor.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
                 .thenThrow(new PaymentNotFoundException("Payment ID :"+PAYMENT_ID+" not found"));
 
-        final var response = this.mockMvc.perform(put("/payments/"+PAYMENT_ID+"/complete")
+        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotFound())
                 .andReturn();
