@@ -1,13 +1,13 @@
-package com.xyzbank.account;
+package com.xyz.payment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AccountApplication {
+public class OrderApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AccountApplication.class, args);
+		SpringApplication.run(OrderApplication.class, args);
 	}
 
 }
