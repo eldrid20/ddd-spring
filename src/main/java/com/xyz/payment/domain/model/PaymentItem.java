@@ -1,6 +1,5 @@
 package com.xyz.payment.domain.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "payment_items")
 @NoArgsConstructor
-@AllArgsConstructor
 public class PaymentItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +30,8 @@ public class PaymentItem {
     Payment payment;
 
     public static PaymentItem of(BigDecimal amount){
-        return new PaymentItem(null,amount,null);
+        final var paymentItem = new PaymentItem();
+        paymentItem.setAmount(amount);
+        return paymentItem;
     }
 }

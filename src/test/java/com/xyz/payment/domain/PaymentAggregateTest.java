@@ -40,10 +40,10 @@ class PaymentAggregateTest {
     }
 
     @Test
-    void shouldAddProductSuccessfully_WhenOrderIsValid() {
+    void shouldCompletePaymentSuccessfully() {
         //given
         final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.00)));
-        payment.addPaymentItem(PaymentItem.of(BigDecimal.valueOf(32.00)));
+        payment.addItem(PaymentItem.of(BigDecimal.valueOf(32.00)));
 
         //when
         payment.complete();

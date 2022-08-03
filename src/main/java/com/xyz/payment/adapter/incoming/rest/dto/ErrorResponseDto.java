@@ -1,4 +1,4 @@
-package com.xyz.payment.adapter.incoming;
+package com.xyz.payment.adapter.incoming.rest.dto;
 
 import lombok.Data;
 

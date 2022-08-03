@@ -37,6 +37,7 @@ public class Payment {
 
         Payment payment = new Payment();
         payment.setStatus(PaymentStatus.CREATED);
+
         var items = new ArrayList<PaymentItem>();
         items.add(paymentItem);
 
@@ -49,7 +50,7 @@ public class Payment {
         this.status = PaymentStatus.COMPLETED;
     }
 
-    public void addPaymentItem(PaymentItem orderItem) {
+    public void addItem(PaymentItem orderItem) {
         items.add(orderItem);
     }
 

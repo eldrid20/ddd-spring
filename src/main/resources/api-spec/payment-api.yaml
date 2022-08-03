@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  version: v1.0
+  title: Payment API
+  description: 'Payment API specification'
+tags:
+  - name: Payment API Endpoints
+    description: Create Payment, Add Payment Item and Complete Payment.
+servers:
+  - description: localhost WebApp
+    url: http://localhost:8080
+
+paths:
+  /api/v1/payments/:
+    post:
+      tags:
+        - Create Payment
+      summary: Create Payment.
+      operationId: createPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentDto"
+      responses:
+        200:
+          description: Payment Response has been processed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResponseDto"
+        500:
+          description: Paygate CDG Server error
+          content: { }
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    PaymentDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Amount
+    PaymentItemDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: Number of Payment
+        amount:
+          type: number
+          example: 20.0
+          description: Amount
+    PaymentResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Number of Payment
+          example: 1
+        status:
+          type: string
+          enum:
+            - CREATED
+            - COMPLETED
+            - CANCELLED
+          description: Payment Status
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentItemDto'
+          description: Payment Items
+
