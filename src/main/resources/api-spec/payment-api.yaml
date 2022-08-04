@@ -11,10 +11,10 @@ servers:
     url: http://localhost:8080
 
 paths:
-  /api/v1/payments/:
+  /api/v1/payments:
     post:
       tags:
-        - Create Payment
+        - Payment
       summary: Create Payment.
       operationId: createPayment
       requestBody:
@@ -25,14 +25,99 @@ paths:
               $ref: "#/components/schemas/PaymentDto"
       responses:
         200:
-          description: Payment Response has been processed.
+          description: Payment has been created.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentResponseDto"
+        400:
+          description: Bad Request, invalid request body supplied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
         500:
-          description: Paygate CDG Server error
-          content: { }
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+  /api/v1/payments/{payment-id}/items:
+    put:
+      tags:
+        - Payment
+      summary: Add item to Payment.
+      operationId: addPaymentItem
+      parameters:
+        - in: path
+          name: payment-id
+          schema:
+            type: integer
+          required: true
+          description: Generated Payment ID from Create Payment operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentDto"
+      responses:
+        200:
+          description: Payment item has been added.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResponseDto"
+        400:
+          description: Bad Request, invalid request body supplied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
+        404:
+          description: Unable to find supplied Payment ID in DB.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+  /api/v1/payments/{payment-id}/completed:
+    put:
+      tags:
+        - Payment
+      summary: Finalized and completed Payment cycle (definition and next step is TBD ;) ).
+      operationId: completePayment
+      parameters:
+        - in: path
+          name: payment-id
+          schema:
+            type: integer
+          required: true
+          description: Generated Payment ID from Create Payment operation.
+      responses:
+        200:
+          description: Payment has been completed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResponseDto"
+        404:
+          description: Unable to find supplied Payment ID in DB.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
 components:
   securitySchemes:
     BasicAuth:
@@ -75,4 +160,28 @@ components:
           items:
             $ref: '#/components/schemas/PaymentItemDto'
           description: Payment Items
-
+    ErrorResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Error Message
+    ErrorFieldResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Error Message
+        errorFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorFieldDto'
+    ErrorFieldDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Field name that invalid
+        message:
+          type: string
+          description: Description of the error
