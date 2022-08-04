@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -34,14 +33,9 @@ public class Payment {
     List<PaymentItem> items;
 
     public static Payment create(PaymentItem paymentItem) {
-
-        Payment payment = new Payment();
+        var payment = new Payment();
         payment.setStatus(PaymentStatus.CREATED);
-
-        var items = new ArrayList<PaymentItem>();
-        items.add(paymentItem);
-
-        payment.setItems(items);
+        payment.setItems(List.of(paymentItem));
         return payment;
     }
 
