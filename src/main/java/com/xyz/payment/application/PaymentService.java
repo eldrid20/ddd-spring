@@ -23,13 +23,13 @@ public class PaymentService {
     }
 
     public Payment addPaymentItem(AddPaymentItemCommand command){
-        final Payment payment = findPayment(command.getPaymentId());
+        final var payment = findPayment(command.getPaymentId());
         payment.addItem(PaymentItem.of(command.getAmount()));
         return paymentRepository.savePayment(payment);
     }
 
     public Payment completePayment(CompletePaymentCommand command){
-        final Payment payment = findPayment(command.getPaymentId());
+        final var payment = findPayment(command.getPaymentId());
         payment.complete();
         return paymentRepository.savePayment(payment);
     }
