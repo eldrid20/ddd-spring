@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PaymentProcessor {
+public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     public Payment createPayment(CreatePaymentCommand command){

@@ -5,7 +5,7 @@ import com.xyz.payment.adapter.incoming.rest.dto.ErrorField;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorFieldResponseDto;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorResponseDto;
 import com.xyz.payment.adapter.incoming.rest.dto.PaymentDto;
-import com.xyz.payment.application.PaymentProcessor;
+import com.xyz.payment.application.PaymentService;
 import com.xyz.payment.domain.command.CompletePaymentCommand;
 import com.xyz.payment.domain.exception.PaymentNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ class PaymentControllerErrorResponseMvcTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private PaymentProcessor processor;
+    private PaymentService paymentService;
 
     @Test
     void createPayment_WhenAmountEmpty_ShouldReturnHttp400() throws Exception {
@@ -88,7 +88,7 @@ class PaymentControllerErrorResponseMvcTest {
     @Test
     void completePaymentItem_WhenPaymentIdNotFound_ShouldReturnHttp404() throws Exception {
         //given & when
-        Mockito.when(processor.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
+        Mockito.when(paymentService.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
                 .thenThrow(new PaymentNotFoundException("Payment ID :"+PAYMENT_ID+" not found"));
 
         final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")

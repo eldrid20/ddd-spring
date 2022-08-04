@@ -2,7 +2,7 @@ package com.xyz.payment.adapter.incoming.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xyz.payment.adapter.incoming.rest.dto.PaymentDto;
-import com.xyz.payment.application.PaymentProcessor;
+import com.xyz.payment.application.PaymentService;
 import com.xyz.payment.domain.command.AddPaymentItemCommand;
 import com.xyz.payment.domain.command.CompletePaymentCommand;
 import com.xyz.payment.domain.command.CreatePaymentCommand;
@@ -38,7 +38,7 @@ class PaymentControllerMvcTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private PaymentProcessor processor;
+    private PaymentService paymentService;
 
     @Test
     void createPayment_WhenSuccessful_ShouldReturnHttp200() throws Exception {
@@ -47,7 +47,7 @@ class PaymentControllerMvcTest {
         final var paymentDto = getPaymentDto();
 
         final var expectedPaymentResponse = getExpectedPaymentResponse();
-        when(processor.createPayment(createPayment)).thenReturn(expectedPaymentResponse);
+        when(paymentService.createPayment(createPayment)).thenReturn(expectedPaymentResponse);
 
         //when
         final var response = this.mockMvc.perform(post("/v1/payments")
@@ -67,7 +67,7 @@ class PaymentControllerMvcTest {
         final var paymentDto = getPaymentDto();
         final var addPaymentItemCommand = AddPaymentItemCommand.of(PAYMENT_ID,AMOUNT);
         final var expectedPaymentResponse = getExpectedPaymentResponseWithAdditionalItem(PaymentItem.of(addPaymentItemCommand.getAmount()));
-        when(processor.addPaymentItem(addPaymentItemCommand)).thenReturn(expectedPaymentResponse);
+        when(paymentService.addPaymentItem(addPaymentItemCommand)).thenReturn(expectedPaymentResponse);
 
         //when
         final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/items")
@@ -87,7 +87,7 @@ class PaymentControllerMvcTest {
         final var paymentDto = getPaymentDto();
         final var completePaymentCommand = CompletePaymentCommand.of(PAYMENT_ID);
         final var expectedPaymentResponse = getCompletedPayment();
-        when(processor.completePayment(completePaymentCommand)).thenReturn(expectedPaymentResponse);
+        when(paymentService.completePayment(completePaymentCommand)).thenReturn(expectedPaymentResponse);
 
         //when
         final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")

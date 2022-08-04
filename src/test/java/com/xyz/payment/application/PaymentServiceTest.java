@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 @ActiveProfiles("test")
 @Transactional
-class PaymentProcessorTest extends AbstractContainerBaseTest {
+class PaymentServiceTest extends AbstractContainerBaseTest {
 
     @Autowired
-    private PaymentProcessor paymentProcessor;
+    private PaymentService paymentService;
 
     @Test
     void createPaymentByCommand_ShouldCreatedSuccessfully() {
@@ -33,7 +33,7 @@ class PaymentProcessorTest extends AbstractContainerBaseTest {
         final var command = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
 
         //when
-        final var payment = paymentProcessor.createPayment(command);
+        final var payment = paymentService.createPayment(command);
 
         //then
         assertThat(payment.getTotalAmount().compareTo(BigDecimal.valueOf(10.00))).isZero();
@@ -43,12 +43,12 @@ class PaymentProcessorTest extends AbstractContainerBaseTest {
     void addPaymentItemByCommand_ShouldBeAddedSuccessfully() {
         //given
         final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
-        final var payment = paymentProcessor.createPayment(createPaymentCommand);
+        final var payment = paymentService.createPayment(createPaymentCommand);
 
         //when
         final var addItemCommand = AddPaymentItemCommand.of(payment.getId(),BigDecimal.valueOf(35.00));
         final var updatedPayment =
-                paymentProcessor.addPaymentItem(addItemCommand);
+                paymentService.addPaymentItem(addItemCommand);
 
         //then
         assertThat(updatedPayment.getTotalAmount().compareTo(BigDecimal.valueOf(45.00))).isZero();
@@ -59,21 +59,21 @@ class PaymentProcessorTest extends AbstractContainerBaseTest {
         //given
         final var addPaymentItemCommand = AddPaymentItemCommand.of(-1L,BigDecimal.valueOf(12));
         Assertions.assertThrows(PaymentNotFoundException.class,
-                () -> paymentProcessor.addPaymentItem(addPaymentItemCommand));
+                () -> paymentService.addPaymentItem(addPaymentItemCommand));
     }
 
     @Test
     void completePaymentByCommand_ShouldBeProceedSuccessfully() {
         //given
         final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
-        final var payment = paymentProcessor.createPayment(createPaymentCommand);
+        final var payment = paymentService.createPayment(createPaymentCommand);
 
         //when
         final var addItemCommand = AddPaymentItemCommand.of(payment.getId(),BigDecimal.valueOf(35.00));
-        final var updatedPayment = paymentProcessor.addPaymentItem(addItemCommand);
+        final var updatedPayment = paymentService.addPaymentItem(addItemCommand);
 
         final var completeCommand = CompletePaymentCommand.of(updatedPayment.getId());
-        paymentProcessor.completePayment(completeCommand);
+        paymentService.completePayment(completeCommand);
 
         //then
         assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.COMPLETED);
@@ -84,6 +84,6 @@ class PaymentProcessorTest extends AbstractContainerBaseTest {
         //given
         final var completeCommand = CompletePaymentCommand.of(-1L);
         Assertions.assertThrows(PaymentNotFoundException.class,
-                () -> paymentProcessor.completePayment(completeCommand));
+                () -> paymentService.completePayment(completeCommand));
     }
 }

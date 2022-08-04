@@ -1,7 +1,7 @@
 package com.xyz.payment.adapter.incoming.rest;
 
 import com.xyz.payment.adapter.incoming.rest.dto.PaymentDto;
-import com.xyz.payment.application.PaymentProcessor;
+import com.xyz.payment.application.PaymentService;
 import com.xyz.payment.domain.command.AddPaymentItemCommand;
 import com.xyz.payment.domain.command.CompletePaymentCommand;
 import com.xyz.payment.domain.command.CreatePaymentCommand;
@@ -20,26 +20,26 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentProcessor processor;
+    private final PaymentService paymentService;
 
     @PostMapping(value = "/v1/payments",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Payment createPayment(@RequestBody @Valid PaymentDto paymentDto){
-        return processor.createPayment(CreatePaymentCommand.of(paymentDto.getAmount()));
+        return paymentService.createPayment(CreatePaymentCommand.of(paymentDto.getAmount()));
     }
 
     @PutMapping(value = "/v1/payments/{paymentId}/items",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Payment addPaymentItem(@PathVariable Long paymentId, @RequestBody @Valid PaymentDto paymentDto){
-        return processor.addPaymentItem(AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
+        return paymentService.addPaymentItem(AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
     }
 
     @PutMapping(value = "/v1/payments/{paymentId}/complete",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Payment completePaymentItem(@PathVariable Long paymentId){
-        return processor.completePayment(CompletePaymentCommand.of(paymentId));
+        return paymentService.completePayment(CompletePaymentCommand.of(paymentId));
     }
 }
