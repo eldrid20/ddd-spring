@@ -22,41 +22,39 @@ import java.util.List;
 @Table(name = "payment")
 @NoArgsConstructor
 public class Payment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Enumerated(EnumType.STRING)
-    PaymentStatus status;
+  @Enumerated(EnumType.STRING)
+  PaymentStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "payment")
-    List<PaymentItem> items;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "payment")
+  List<PaymentItem> items;
 
-    public static Payment create(PaymentItem paymentItem) {
-        var payment = new Payment();
-        payment.setStatus(PaymentStatus.CREATED);
-        payment.setItems(List.of(paymentItem));
-        return payment;
+  public static Payment create(PaymentItem paymentItem) {
+    var payment = new Payment();
+    payment.setStatus(PaymentStatus.CREATED);
+    payment.setItems(List.of(paymentItem));
+    return payment;
+  }
+
+  public void complete() {
+    validateStatus();
+    this.status = PaymentStatus.COMPLETED;
+  }
+
+  public void addItem(PaymentItem orderItem) {
+    items.add(orderItem);
+  }
+
+  public BigDecimal getTotalAmount() {
+    return items.stream().map(PaymentItem::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  private void validateStatus() {
+    if (status != PaymentStatus.CREATED) {
+      throw new InvalidPaymentStateException("Order has invalid status:" + status);
     }
-
-    public void complete() {
-        validateStatus();
-        this.status = PaymentStatus.COMPLETED;
-    }
-
-    public void addItem(PaymentItem orderItem) {
-        items.add(orderItem);
-    }
-
-    public BigDecimal getTotalAmount() {
-        return items.stream()
-                .map(PaymentItem::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private void validateStatus() {
-        if (status != PaymentStatus.CREATED) {
-            throw new InvalidPaymentStateException("Order has invalid status:" + status);
-        }
-    }
+  }
 }

@@ -13,44 +13,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PaymentAggregateTest {
 
-    @Test
-    void shouldCompleteOrderSuccessfully_WhenSetupDataAndStateIsValid() {
-        //given
-        final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.0)));
+  @Test
+  void shouldCompleteOrderSuccessfully_WhenSetupDataAndStateIsValid() {
+    // given
+    final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.0)));
 
-        //when
-        payment.complete();
+    // when
+    payment.complete();
 
-        //then
-        assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
-        assertEquals(BigDecimal.valueOf(23.0), payment.getTotalAmount());
-    }
+    // then
+    assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
+    assertEquals(BigDecimal.valueOf(23.0), payment.getTotalAmount());
+  }
 
-    @Test
-    void shouldThrowInvalidOrderStateException_WhenOrderInWrongState() {
-        //given
-        final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.0)));
-        payment.complete();
+  @Test
+  void shouldThrowInvalidOrderStateException_WhenOrderInWrongState() {
+    // given
+    final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.0)));
+    payment.complete();
 
-        //when
-        var invalidOrderStateException = Assertions.assertThrows(InvalidPaymentStateException.class, payment::complete);
+    // when
+    var invalidOrderStateException =
+        Assertions.assertThrows(InvalidPaymentStateException.class, payment::complete);
 
-        //then
-        assertEquals("Order has invalid status:COMPLETED",invalidOrderStateException.getMessage());
-    }
+    // then
+    assertEquals("Order has invalid status:COMPLETED", invalidOrderStateException.getMessage());
+  }
 
-    @Test
-    void shouldCompletePaymentSuccessfully() {
-        //given
-        final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.00)));
-        payment.addItem(PaymentItem.of(BigDecimal.valueOf(32.00)));
+  @Test
+  void shouldCompletePaymentSuccessfully() {
+    // given
+    final Payment payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(23.00)));
+    payment.addItem(PaymentItem.of(BigDecimal.valueOf(32.00)));
 
-        //when
-        payment.complete();
+    // when
+    payment.complete();
 
-        //then
-        assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
-        assertEquals(BigDecimal.valueOf(55.00), payment.getTotalAmount());
-    }
-
+    // then
+    assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
+    assertEquals(BigDecimal.valueOf(55.00), payment.getTotalAmount());
+  }
 }

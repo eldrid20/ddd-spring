@@ -25,88 +25,92 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(PaymentController.class)
 class PaymentControllerErrorResponseMvcTest {
 
-    private static final BigDecimal AMOUNT = BigDecimal.valueOf(10.00);
+  private static final BigDecimal AMOUNT = BigDecimal.valueOf(10.00);
 
-    private static final Long PAYMENT_ID = 1L;
+  private static final Long PAYMENT_ID = 1L;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @MockBean
-    private PaymentService paymentService;
+  @MockBean private PaymentService paymentService;
 
-    @Test
-    void createPayment_WhenAmountEmpty_ShouldReturnHttp400() throws Exception {
-        //given
-        final var paymentDto = getPaymentDto();
-        paymentDto.setAmount(null);
+  @NotNull
+  private static PaymentDto getPaymentDto() {
+    final var paymentDto = new PaymentDto();
+    paymentDto.setAmount(AMOUNT);
+    return paymentDto;
+  }
 
-        //when
-        final var response = this.mockMvc.perform(post("/v1/payments")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(paymentDto)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+  @Test
+  void createPayment_WhenAmountEmpty_ShouldReturnHttp400() throws Exception {
+    // given
+    final var paymentDto = getPaymentDto();
+    paymentDto.setAmount(null);
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        final var expectedResponse = new ErrorFieldResponseDto();
-        expectedResponse.setErrorMessage("Bad Request");
-        expectedResponse.setErrorFields(List.of(new ErrorField("amount","must not be null")));
-        assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
-    }
+    // when
+    final var response =
+        this.mockMvc
+            .perform(
+                post("/v1/payments")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    final var expectedResponse = new ErrorFieldResponseDto();
+    expectedResponse.setErrorMessage("Bad Request");
+    expectedResponse.setErrorFields(List.of(new ErrorField("amount", "must not be null")));
+    assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
+  }
 
-    @Test
-    void addPaymentItem_WhenAmountEmpty_ShouldReturnHttp400() throws Exception {
-        //given
-        final var paymentDto = getPaymentDto();
-        paymentDto.setAmount(null);
+  @Test
+  void addPaymentItem_WhenAmountEmpty_ShouldReturnHttp400() throws Exception {
+    // given
+    final var paymentDto = getPaymentDto();
+    paymentDto.setAmount(null);
 
-        //when
-        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/items")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(paymentDto)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+    // when
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/items")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        final var expectedResponse = new ErrorFieldResponseDto();
-        expectedResponse.setErrorMessage("Bad Request");
-        expectedResponse.setErrorFields(List.of(new ErrorField("amount","must not be null")));
-        assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
-    }
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    final var expectedResponse = new ErrorFieldResponseDto();
+    expectedResponse.setErrorMessage("Bad Request");
+    expectedResponse.setErrorFields(List.of(new ErrorField("amount", "must not be null")));
+    assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
+  }
 
-    @Test
-    void completePaymentItem_WhenPaymentIdNotFound_ShouldReturnHttp404() throws Exception {
-        //given & when
-        Mockito.when(paymentService.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
-                .thenThrow(new PaymentNotFoundException("Payment ID :"+PAYMENT_ID+" not found"));
+  @Test
+  void completePaymentItem_WhenPaymentIdNotFound_ShouldReturnHttp404() throws Exception {
+    // given & when
+    Mockito.when(paymentService.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
+        .thenThrow(new PaymentNotFoundException("Payment ID :" + PAYMENT_ID + " not found"));
 
-        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNotFound())
-                .andReturn();
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/complete")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isNotFound())
+            .andReturn();
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        final var expectedResponse = new ErrorResponseDto();
-        expectedResponse.setErrorMessage("Payment ID :"+PAYMENT_ID+" not found");
-        assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
-    }
-
-    @NotNull
-    private static PaymentDto getPaymentDto() {
-        final var paymentDto = new PaymentDto();
-        paymentDto.setAmount(AMOUNT);
-        return paymentDto;
-    }
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    final var expectedResponse = new ErrorResponseDto();
+    expectedResponse.setErrorMessage("Payment ID :" + PAYMENT_ID + " not found");
+    assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
+  }
 }

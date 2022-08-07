@@ -6,5 +6,5 @@ import java.math.BigDecimal;
 
 @Value(staticConstructor = "of")
 public class CreatePaymentCommand {
-    private final BigDecimal amount;
+  private final BigDecimal amount;
 }

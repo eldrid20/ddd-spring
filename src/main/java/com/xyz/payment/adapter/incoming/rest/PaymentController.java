@@ -20,26 +20,31 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentService paymentService;
+  private final PaymentService paymentService;
 
-    @PostMapping(value = "/v1/payments",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Payment createPayment(@RequestBody @Valid PaymentDto paymentDto){
-        return paymentService.createPayment(CreatePaymentCommand.of(paymentDto.getAmount()));
-    }
+  @PostMapping(
+      value = "/v1/payments",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public Payment createPayment(@RequestBody @Valid PaymentDto paymentDto) {
+    return paymentService.createPayment(CreatePaymentCommand.of(paymentDto.getAmount()));
+  }
 
-    @PutMapping(value = "/v1/payments/{paymentId}/items",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Payment addPaymentItem(@PathVariable Long paymentId, @RequestBody @Valid PaymentDto paymentDto){
-        return paymentService.addPaymentItem(AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
-    }
+  @PutMapping(
+      value = "/v1/payments/{paymentId}/items",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public Payment addPaymentItem(
+      @PathVariable Long paymentId, @RequestBody @Valid PaymentDto paymentDto) {
+    return paymentService.addPaymentItem(
+        AddPaymentItemCommand.of(paymentId, paymentDto.getAmount()));
+  }
 
-    @PutMapping(value = "/v1/payments/{paymentId}/complete",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Payment completePaymentItem(@PathVariable Long paymentId){
-        return paymentService.completePayment(CompletePaymentCommand.of(paymentId));
-    }
+  @PutMapping(
+      value = "/v1/payments/{paymentId}/complete",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public Payment completePaymentItem(@PathVariable Long paymentId) {
+    return paymentService.completePayment(CompletePaymentCommand.of(paymentId));
+  }
 }

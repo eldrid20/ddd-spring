@@ -24,66 +24,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class PaymentServiceTest extends AbstractContainerBaseTest {
 
-    @Autowired
-    private PaymentService paymentService;
+  @Autowired private PaymentService paymentService;
 
-    @Test
-    void createPaymentByCommand_ShouldCreatedSuccessfully() {
-        //given
-        final var command = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
+  @Test
+  void createPaymentByCommand_ShouldCreatedSuccessfully() {
+    // given
+    final var command = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
 
-        //when
-        final var payment = paymentService.createPayment(command);
+    // when
+    final var payment = paymentService.createPayment(command);
 
-        //then
-        assertThat(payment.getTotalAmount().compareTo(BigDecimal.valueOf(10.00))).isZero();
-    }
+    // then
+    assertThat(payment.getTotalAmount().compareTo(BigDecimal.valueOf(10.00))).isZero();
+  }
 
-    @Test
-    void addPaymentItemByCommand_ShouldBeAddedSuccessfully() {
-        //given
-        final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
-        final var payment = paymentService.createPayment(createPaymentCommand);
+  @Test
+  void addPaymentItemByCommand_ShouldBeAddedSuccessfully() {
+    // given
+    final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
+    final var payment = paymentService.createPayment(createPaymentCommand);
 
-        //when
-        final var addItemCommand = AddPaymentItemCommand.of(payment.getId(),BigDecimal.valueOf(35.00));
-        final var updatedPayment =
-                paymentService.addPaymentItem(addItemCommand);
+    // when
+    final var addItemCommand = AddPaymentItemCommand.of(payment.getId(), BigDecimal.valueOf(35.00));
+    final var updatedPayment = paymentService.addPaymentItem(addItemCommand);
 
-        //then
-        assertThat(updatedPayment.getTotalAmount().compareTo(BigDecimal.valueOf(45.00))).isZero();
-    }
+    // then
+    assertThat(updatedPayment.getTotalAmount().compareTo(BigDecimal.valueOf(45.00))).isZero();
+  }
 
-    @Test
-    void addPaymentItemByCommand_WhenInvalidPaymentIdSupplied_ShouldThrowPaymentNotFoundException() {
-        //given
-        final var addPaymentItemCommand = AddPaymentItemCommand.of(-1L,BigDecimal.valueOf(12));
-        Assertions.assertThrows(PaymentNotFoundException.class,
-                () -> paymentService.addPaymentItem(addPaymentItemCommand));
-    }
+  @Test
+  void addPaymentItemByCommand_WhenInvalidPaymentIdSupplied_ShouldThrowPaymentNotFoundException() {
+    // given
+    final var addPaymentItemCommand = AddPaymentItemCommand.of(-1L, BigDecimal.valueOf(12));
+    Assertions.assertThrows(
+        PaymentNotFoundException.class, () -> paymentService.addPaymentItem(addPaymentItemCommand));
+  }
 
-    @Test
-    void completePaymentByCommand_ShouldBeProceedSuccessfully() {
-        //given
-        final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
-        final var payment = paymentService.createPayment(createPaymentCommand);
+  @Test
+  void completePaymentByCommand_ShouldBeProceedSuccessfully() {
+    // given
+    final var createPaymentCommand = CreatePaymentCommand.of(BigDecimal.valueOf(10.00));
+    final var payment = paymentService.createPayment(createPaymentCommand);
 
-        //when
-        final var addItemCommand = AddPaymentItemCommand.of(payment.getId(),BigDecimal.valueOf(35.00));
-        final var updatedPayment = paymentService.addPaymentItem(addItemCommand);
+    // when
+    final var addItemCommand = AddPaymentItemCommand.of(payment.getId(), BigDecimal.valueOf(35.00));
+    final var updatedPayment = paymentService.addPaymentItem(addItemCommand);
 
-        final var completeCommand = CompletePaymentCommand.of(updatedPayment.getId());
-        paymentService.completePayment(completeCommand);
+    final var completeCommand = CompletePaymentCommand.of(updatedPayment.getId());
+    paymentService.completePayment(completeCommand);
 
-        //then
-        assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.COMPLETED);
-    }
+    // then
+    assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.COMPLETED);
+  }
 
-    @Test
-    void completePaymentByCommand_WhenInvalidPaymentIdSupplied_ShouldThrowPaymentNotFoundException() {
-        //given
-        final var completeCommand = CompletePaymentCommand.of(-1L);
-        Assertions.assertThrows(PaymentNotFoundException.class,
-                () -> paymentService.completePayment(completeCommand));
-    }
+  @Test
+  void completePaymentByCommand_WhenInvalidPaymentIdSupplied_ShouldThrowPaymentNotFoundException() {
+    // given
+    final var completeCommand = CompletePaymentCommand.of(-1L);
+    Assertions.assertThrows(
+        PaymentNotFoundException.class, () -> paymentService.completePayment(completeCommand));
+  }
 }

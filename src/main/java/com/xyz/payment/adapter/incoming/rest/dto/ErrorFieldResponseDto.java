@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ErrorFieldResponseDto extends ErrorResponseDto{
-    private List<ErrorField> errorFields;
+public class ErrorFieldResponseDto extends ErrorResponseDto {
+  private List<ErrorField> errorFields;
 }

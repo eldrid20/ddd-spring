@@ -6,6 +6,6 @@ import java.math.BigDecimal;
 
 @Value(staticConstructor = "of")
 public class AddPaymentItemCommand {
-    Long paymentId;
-    BigDecimal amount;
+  Long paymentId;
+  BigDecimal amount;
 }

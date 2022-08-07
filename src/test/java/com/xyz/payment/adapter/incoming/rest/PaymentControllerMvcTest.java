@@ -24,108 +24,116 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(PaymentController.class)
 class PaymentControllerMvcTest {
 
-    private static final BigDecimal AMOUNT = BigDecimal.valueOf(10.00);
+  private static final BigDecimal AMOUNT = BigDecimal.valueOf(10.00);
 
-    private static final Long PAYMENT_ID = 1L;
+  private static final Long PAYMENT_ID = 1L;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
-    private PaymentService paymentService;
+  @Autowired private ObjectMapper objectMapper;
+  @MockBean private PaymentService paymentService;
 
-    @Test
-    void createPayment_WhenSuccessful_ShouldReturnHttp200() throws Exception {
-        //given
-        final var createPayment = CreatePaymentCommand.of(AMOUNT);
-        final var paymentDto = getPaymentDto();
+  @NotNull
+  private static PaymentDto getPaymentDto() {
+    final var paymentDto = new PaymentDto();
+    paymentDto.setAmount(AMOUNT);
+    return paymentDto;
+  }
 
-        final var expectedPaymentResponse = getExpectedPaymentResponse();
-        when(paymentService.createPayment(createPayment)).thenReturn(expectedPaymentResponse);
+  @NotNull
+  private static Payment getExpectedPaymentResponse() {
+    final var payment = Payment.create(PaymentItem.of(AMOUNT));
+    payment.setId(1L);
+    return payment;
+  }
 
-        //when
-        final var response = this.mockMvc.perform(post("/v1/payments")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(paymentDto)))
-                .andExpect(status().isOk())
-                .andReturn();
+  private static Payment getExpectedPaymentResponseWithAdditionalItem(PaymentItem paymentItem) {
+    final var payment = Payment.create(PaymentItem.of(AMOUNT));
+    payment.setId(1L);
+    payment.addItem(paymentItem);
+    return payment;
+  }
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
-    }
+  private static Payment getCompletedPayment() {
+    final var payment = Payment.create(PaymentItem.of(AMOUNT));
+    payment.setId(1L);
+    payment.complete();
+    return payment;
+  }
 
-    @Test
-    void addPaymentItem_WhenSuccessful_ShouldReturnHttp200() throws Exception {
-        //given
-        final var paymentDto = getPaymentDto();
-        final var addPaymentItemCommand = AddPaymentItemCommand.of(PAYMENT_ID,AMOUNT);
-        final var expectedPaymentResponse = getExpectedPaymentResponseWithAdditionalItem(PaymentItem.of(addPaymentItemCommand.getAmount()));
-        when(paymentService.addPaymentItem(addPaymentItemCommand)).thenReturn(expectedPaymentResponse);
+  @Test
+  void createPayment_WhenSuccessful_ShouldReturnHttp200() throws Exception {
+    // given
+    final var createPayment = CreatePaymentCommand.of(AMOUNT);
+    final var paymentDto = getPaymentDto();
 
-        //when
-        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/items")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(paymentDto)))
-                .andExpect(status().isOk())
-                .andReturn();
+    final var expectedPaymentResponse = getExpectedPaymentResponse();
+    when(paymentService.createPayment(createPayment)).thenReturn(expectedPaymentResponse);
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
-    }
+    // when
+    final var response =
+        this.mockMvc
+            .perform(
+                post("/v1/payments")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    @Test
-    void completePayment_WhenSuccessful_ShouldReturnHttp200() throws Exception {
-        //given
-        final var paymentDto = getPaymentDto();
-        final var completePaymentCommand = CompletePaymentCommand.of(PAYMENT_ID);
-        final var expectedPaymentResponse = getCompletedPayment();
-        when(paymentService.completePayment(completePaymentCommand)).thenReturn(expectedPaymentResponse);
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
+  }
 
-        //when
-        final var response = this.mockMvc.perform(put("/v1/payments/"+PAYMENT_ID+"/complete")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(paymentDto)))
-                .andExpect(status().isOk())
-                .andReturn();
+  @Test
+  void addPaymentItem_WhenSuccessful_ShouldReturnHttp200() throws Exception {
+    // given
+    final var paymentDto = getPaymentDto();
+    final var addPaymentItemCommand = AddPaymentItemCommand.of(PAYMENT_ID, AMOUNT);
+    final var expectedPaymentResponse =
+        getExpectedPaymentResponseWithAdditionalItem(
+            PaymentItem.of(addPaymentItemCommand.getAmount()));
+    when(paymentService.addPaymentItem(addPaymentItemCommand)).thenReturn(expectedPaymentResponse);
 
-        //then
-        final var paymentResponse = response.getResponse().getContentAsString();
-        assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
-    }
+    // when
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/items")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    @NotNull
-    private static PaymentDto getPaymentDto() {
-        final var paymentDto = new PaymentDto();
-        paymentDto.setAmount(AMOUNT);
-        return paymentDto;
-    }
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
+  }
 
-    @NotNull
-    private static Payment getExpectedPaymentResponse() {
-        final var payment = Payment.create(PaymentItem.of(AMOUNT));
-        payment.setId(1L);
-        return payment;
-    }
+  @Test
+  void completePayment_WhenSuccessful_ShouldReturnHttp200() throws Exception {
+    // given
+    final var paymentDto = getPaymentDto();
+    final var completePaymentCommand = CompletePaymentCommand.of(PAYMENT_ID);
+    final var expectedPaymentResponse = getCompletedPayment();
+    when(paymentService.completePayment(completePaymentCommand))
+        .thenReturn(expectedPaymentResponse);
 
-    private static Payment getExpectedPaymentResponseWithAdditionalItem(PaymentItem paymentItem) {
-        final var payment = Payment.create(PaymentItem.of(AMOUNT));
-        payment.setId(1L);
-        payment.addItem(paymentItem);
-        return payment;
-    }
+    // when
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/complete")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    private static Payment getCompletedPayment() {
-        final var payment = Payment.create(PaymentItem.of(AMOUNT));
-        payment.setId(1L);
-        payment.complete();
-        return payment;
-    }
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    assertThat(objectMapper.writeValueAsString(expectedPaymentResponse)).isEqualTo(paymentResponse);
+  }
 }

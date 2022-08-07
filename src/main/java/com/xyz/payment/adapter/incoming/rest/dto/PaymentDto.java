@@ -9,6 +9,5 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class PaymentDto {
-    @NotNull
-    private BigDecimal amount;
+  @NotNull private BigDecimal amount;
 }

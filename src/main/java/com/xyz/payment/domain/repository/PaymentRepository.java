@@ -5,7 +5,7 @@ import com.xyz.payment.domain.model.Payment;
 import java.util.Optional;
 
 public interface PaymentRepository {
-    Optional<Payment> findById(Long paymentId);
+  Optional<Payment> findById(Long paymentId);
 
-    Payment savePayment(Payment payment);
+  Payment savePayment(Payment payment);
 }

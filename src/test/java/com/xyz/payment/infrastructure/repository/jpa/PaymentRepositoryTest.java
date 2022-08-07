@@ -19,15 +19,14 @@ import static org.junit.Assert.assertNotNull;
 @ActiveProfiles("test")
 class PaymentRepositoryTest extends AbstractContainerBaseTest {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+  @Autowired private PaymentRepository paymentRepository;
 
-    @Test
-    void shouldReturnPayment_WhenSavedToDB() {
-        //given
-        var payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(10)));
+  @Test
+  void shouldReturnPayment_WhenSavedToDB() {
+    // given
+    var payment = Payment.create(PaymentItem.of(BigDecimal.valueOf(10)));
 
-        //when & then
-        assertNotNull(paymentRepository.savePayment(payment));
-    }
+    // when & then
+    assertNotNull(paymentRepository.savePayment(payment));
+  }
 }

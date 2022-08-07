@@ -15,28 +15,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class PaymentService {
-    private final PaymentRepository paymentRepository;
+  private final PaymentRepository paymentRepository;
 
-    public Payment createPayment(CreatePaymentCommand command){
-        final var payment = Payment.create(PaymentItem.of(command.getAmount()));
-        return paymentRepository.savePayment(payment);
-    }
+  public Payment createPayment(CreatePaymentCommand command) {
+    final var payment = Payment.create(PaymentItem.of(command.getAmount()));
+    return paymentRepository.savePayment(payment);
+  }
 
-    public Payment addPaymentItem(AddPaymentItemCommand command){
-        final var payment = findPayment(command.getPaymentId());
-        payment.addItem(PaymentItem.of(command.getAmount()));
-        return paymentRepository.savePayment(payment);
-    }
+  public Payment addPaymentItem(AddPaymentItemCommand command) {
+    final var payment = findPayment(command.getPaymentId());
+    payment.addItem(PaymentItem.of(command.getAmount()));
+    return paymentRepository.savePayment(payment);
+  }
 
-    public Payment completePayment(CompletePaymentCommand command){
-        final var payment = findPayment(command.getPaymentId());
-        payment.complete();
-        return paymentRepository.savePayment(payment);
-    }
+  public Payment completePayment(CompletePaymentCommand command) {
+    final var payment = findPayment(command.getPaymentId());
+    payment.complete();
+    return paymentRepository.savePayment(payment);
+  }
 
-    private Payment findPayment(Long command) {
-        return paymentRepository
-                .findById(command)
-                .orElseThrow(() ->  new PaymentNotFoundException("Payment ID Not found :"+ command));
-    }
+  private Payment findPayment(Long command) {
+    return paymentRepository
+        .findById(command)
+        .orElseThrow(() -> new PaymentNotFoundException("Payment ID Not found :" + command));
+  }
 }

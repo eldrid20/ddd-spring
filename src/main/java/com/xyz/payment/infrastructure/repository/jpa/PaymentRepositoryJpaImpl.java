@@ -11,15 +11,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PaymentRepositoryJpaImpl implements PaymentRepository {
 
-    private final PaymentJpaRepository paymentJpaRepository;
+  private final PaymentJpaRepository paymentJpaRepository;
 
-    @Override
-    public Optional<Payment> findById(Long paymentId) {
-        return paymentJpaRepository.findById(paymentId);
-    }
+  @Override
+  public Optional<Payment> findById(Long paymentId) {
+    return paymentJpaRepository.findById(paymentId);
+  }
 
-    @Override
-    public Payment savePayment(Payment payment) {
-        return paymentJpaRepository.save(payment);
-    }
+  @Override
+  public Payment savePayment(Payment payment) {
+    return paymentJpaRepository.save(payment);
+  }
 }
