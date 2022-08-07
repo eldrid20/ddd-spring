@@ -74,6 +74,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorFieldResponseDto"
+        409:
+          description: Unable to perform operation, payment state conflict occurred, (example. Payment already completed).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
         404:
           description: Unable to find supplied Payment ID in DB.
           content:
@@ -112,6 +118,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
+        409:
+          description: Unable to perform operation, payment state conflict occurred, (example. Payment already completed).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
         500:
           description: Server Error
           content:

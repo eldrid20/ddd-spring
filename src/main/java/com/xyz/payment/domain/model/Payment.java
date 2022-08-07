@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -35,7 +36,10 @@ public class Payment {
   public static Payment create(PaymentItem paymentItem) {
     var payment = new Payment();
     payment.setStatus(PaymentStatus.CREATED);
-    payment.setItems(List.of(paymentItem));
+
+    List<PaymentItem> items = new ArrayList<>();
+    items.add(paymentItem);
+    payment.setItems(items);
     return payment;
   }
 
@@ -45,6 +49,7 @@ public class Payment {
   }
 
   public void addItem(PaymentItem orderItem) {
+    validateStatus();
     items.add(orderItem);
   }
 

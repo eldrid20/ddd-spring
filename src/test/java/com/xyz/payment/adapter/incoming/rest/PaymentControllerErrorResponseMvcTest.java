@@ -6,7 +6,9 @@ import com.xyz.payment.adapter.incoming.rest.dto.ErrorFieldResponseDto;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorResponseDto;
 import com.xyz.payment.adapter.incoming.rest.dto.PaymentDto;
 import com.xyz.payment.application.PaymentService;
+import com.xyz.payment.domain.command.AddPaymentItemCommand;
 import com.xyz.payment.domain.command.CompletePaymentCommand;
+import com.xyz.payment.domain.exception.InvalidPaymentStateException;
 import com.xyz.payment.domain.exception.PaymentNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -94,6 +96,33 @@ class PaymentControllerErrorResponseMvcTest {
   }
 
   @Test
+  void addPaymentItem_WhenPaymentHasBeenCompleted_ShouldReturnHttp409() throws Exception {
+    // given & when
+    final var paymentDto = getPaymentDto();
+    final var expectedErrorMessage =
+        String.format("Invalid Status: payment ID : %d status is COMPLETED", PAYMENT_ID);
+    Mockito.when(
+            paymentService.addPaymentItem(
+                AddPaymentItemCommand.of(PAYMENT_ID, paymentDto.getAmount())))
+        .thenThrow(new InvalidPaymentStateException(expectedErrorMessage));
+
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/items")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(objectMapper.writeValueAsString(paymentDto)))
+            .andExpect(status().isConflict())
+            .andReturn();
+
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    final var expectedResponse = new ErrorResponseDto();
+    expectedResponse.setErrorMessage(expectedErrorMessage);
+    assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
+  }
+
+  @Test
   void completePaymentItem_WhenPaymentIdNotFound_ShouldReturnHttp404() throws Exception {
     // given & when
     Mockito.when(paymentService.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
@@ -111,6 +140,29 @@ class PaymentControllerErrorResponseMvcTest {
     final var paymentResponse = response.getResponse().getContentAsString();
     final var expectedResponse = new ErrorResponseDto();
     expectedResponse.setErrorMessage("Payment ID :" + PAYMENT_ID + " not found");
+    assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
+  }
+
+  @Test
+  void completePaymentItem_WhenPaymentHasBeenCompleted_ShouldReturnHttp409() throws Exception {
+    // given & when
+    final var expectedErrorMessage =
+        String.format("Invalid Status: payment ID : %d status is COMPLETED", PAYMENT_ID);
+    Mockito.when(paymentService.completePayment(CompletePaymentCommand.of(PAYMENT_ID)))
+        .thenThrow(new InvalidPaymentStateException(expectedErrorMessage));
+
+    final var response =
+        this.mockMvc
+            .perform(
+                put("/v1/payments/" + PAYMENT_ID + "/complete")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isConflict())
+            .andReturn();
+
+    // then
+    final var paymentResponse = response.getResponse().getContentAsString();
+    final var expectedResponse = new ErrorResponseDto();
+    expectedResponse.setErrorMessage(expectedErrorMessage);
     assertThat(objectMapper.writeValueAsString(expectedResponse)).isEqualTo(paymentResponse);
   }
 }

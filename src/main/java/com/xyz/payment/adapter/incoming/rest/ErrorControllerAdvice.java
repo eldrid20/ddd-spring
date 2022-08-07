@@ -3,6 +3,7 @@ package com.xyz.payment.adapter.incoming.rest;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorField;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorFieldResponseDto;
 import com.xyz.payment.adapter.incoming.rest.dto.ErrorResponseDto;
+import com.xyz.payment.domain.exception.InvalidPaymentStateException;
 import com.xyz.payment.domain.exception.PaymentNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,15 @@ public class ErrorControllerAdvice {
     var errorResponseDto = new ErrorResponseDto();
     errorResponseDto.setErrorMessage(exception.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+  }
+
+  @ExceptionHandler(value = InvalidPaymentStateException.class)
+  public ResponseEntity<ErrorResponseDto> handleInvalidPaymentState(
+      InvalidPaymentStateException exception) {
+    log.error(exception.getMessage());
+    var errorResponseDto = new ErrorResponseDto();
+    errorResponseDto.setErrorMessage(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
