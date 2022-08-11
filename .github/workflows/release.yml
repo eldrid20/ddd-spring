@@ -26,7 +26,7 @@ jobs:
         uses: nnichols/maven-version-bump-action@v3
         with:
           github-token: ${{ secrets.GH_TOKEN }}
-          pom-path: ${{ GITHUB_WORKSPACE }}/pom.xml
+          pom-path: ${{ github.workspace }}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.39.0
         env:
