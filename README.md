@@ -1,6 +1,6 @@
 # Domain Driven Design(DDD) Sample
 
-This repository shows simple project of Payment using DDD Aggregate design and Hexagonal Architecture
+This repository shows simple project of Ordering system using DDD Aggregate design and Hexagonal Architecture
 
 Package definition
 
