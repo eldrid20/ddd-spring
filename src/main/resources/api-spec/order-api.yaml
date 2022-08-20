@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  version: v1.0
+  title: Order API
+  description: 'Order API specification'
+tags:
+  - name: Order API Endpoints
+    description: Create Order, Add Order Item and Complete Order.
+servers:
+  - description: localhost WebApp
+    url: http://localhost:8080
+
+paths:
+  /api/v1/orders:
+    post:
+      tags:
+        - Order
+      summary: Create Order.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderDto"
+      responses:
+        200:
+          description: Order has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+        400:
+          description: Bad Request, invalid request body supplied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+  /api/v1/orders/{order-id}/items:
+    put:
+      tags:
+        - Order
+      summary: Add item to Order.
+      operationId: addOrderItem
+      parameters:
+        - in: path
+          name: order-id
+          schema:
+            type: integer
+          required: true
+          description: Generated Order ID from Create Order operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderDto"
+      responses:
+        200:
+          description: Order item has been added.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+        400:
+          description: Bad Request, invalid request body supplied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
+        409:
+          description: Unable to perform operation, order state conflict occurred, (example. Order already completed).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
+        404:
+          description: Unable to find supplied Order ID in DB.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+  /api/v1/payments/{payment-id}/completed:
+    put:
+      tags:
+        - Order
+      summary: Finalized and completed Order cycle (definition and next step is TBD ;) ).
+      operationId: completeOrder
+      parameters:
+        - in: path
+          name: payment-id
+          schema:
+            type: integer
+          required: true
+          description: Generated Order ID from Create Order operation.
+      responses:
+        200:
+          description: Order has been completed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+        404:
+          description: Unable to find supplied Order ID in DB.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        409:
+          description: Unable to perform operation, payment state conflict occurred, (example. Order already completed).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorFieldResponseDto"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    OrderDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Amount
+    OrderItemDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: Number of Order
+        amount:
+          type: number
+          example: 20.0
+          description: Amount
+    OrderResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Number of Order
+          example: 1
+        status:
+          type: string
+          enum:
+            - CREATED
+            - COMPLETED
+            - CANCELLED
+          description: Order Status
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemDto'
+          description: Order Items
+    ErrorResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Error Message
+    ErrorFieldResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Error Message
+        errorFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorFieldDto'
+    ErrorFieldDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Field name that invalid
+        message:
+          type: string
+          description: Description of the error
