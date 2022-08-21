@@ -9,17 +9,17 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderRepositoryJpaImpl implements OrderRepository {
+public class OrderRepositoryImpl implements OrderRepository {
 
-  private final OrderJpaRepository orderJpaRepository;
+  private final OrderRepositoryJpa orderRepositoryJp;
 
   @Override
   public Optional<Order> findById(Long orderId) {
-    return orderJpaRepository.findById(orderId);
+    return orderRepositoryJp.findById(orderId);
   }
 
   @Override
   public Order save(Order order) {
-    return orderJpaRepository.save(order);
+    return orderRepositoryJp.save(order);
   }
 }
