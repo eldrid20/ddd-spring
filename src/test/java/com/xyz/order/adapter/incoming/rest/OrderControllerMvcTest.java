@@ -3,9 +3,9 @@ package com.xyz.order.adapter.incoming.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xyz.order.adapter.incoming.rest.dto.OrderItemDto;
 import com.xyz.order.application.OrderService;
-import com.xyz.order.domain.command.AddOrderItemCommand;
-import com.xyz.order.domain.command.CompleteOrderCommand;
-import com.xyz.order.domain.command.CreateOrderCommand;
+import com.xyz.order.domain.command.AddOrderItem;
+import com.xyz.order.domain.command.CompleteOrder;
+import com.xyz.order.domain.command.CreateOrder;
 import com.xyz.order.domain.model.Order;
 import com.xyz.order.domain.model.OrderItem;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +67,7 @@ class OrderControllerMvcTest {
   @Test
   void createOrder_WhenSuccessful_ShouldReturnHttp200() throws Exception {
     // given
-    final var createOrder = CreateOrderCommand.of(AMOUNT);
+    final var createOrder = CreateOrder.of(AMOUNT);
     final var orderDto = getOrderDto();
 
     final var expectedOrderResponse = getExpectedOrderResponse();
@@ -92,7 +92,7 @@ class OrderControllerMvcTest {
   void addOrderItem_WhenSuccessful_ShouldReturnHttp200() throws Exception {
     // given
     final var orderDto = getOrderDto();
-    final var addOrderItemCommand = AddOrderItemCommand.of(PAYMENT_ID, AMOUNT);
+    final var addOrderItemCommand = AddOrderItem.of(PAYMENT_ID, AMOUNT);
     final var expectedOrderResponse =
         getExpectedOrderResponseWithAdditionalItem(
             OrderItem.of(addOrderItemCommand.getAmount()));
@@ -117,7 +117,7 @@ class OrderControllerMvcTest {
   void completeOrder_WhenSuccessful_ShouldReturnHttp200() throws Exception {
     // given
     final var orderDto = getOrderDto();
-    final var completeOrderCommand = CompleteOrderCommand.of(PAYMENT_ID);
+    final var completeOrderCommand = CompleteOrder.of(PAYMENT_ID);
     final var expectedOrderResponse = getCompletedOrder();
     when(orderService.complete(completeOrderCommand))
         .thenReturn(expectedOrderResponse);

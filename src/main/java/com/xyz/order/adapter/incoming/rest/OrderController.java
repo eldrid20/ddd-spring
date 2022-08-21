@@ -2,9 +2,9 @@ package com.xyz.order.adapter.incoming.rest;
 
 import com.xyz.order.adapter.incoming.rest.dto.OrderItemDto;
 import com.xyz.order.application.OrderService;
-import com.xyz.order.domain.command.AddOrderItemCommand;
-import com.xyz.order.domain.command.CompleteOrderCommand;
-import com.xyz.order.domain.command.CreateOrderCommand;
+import com.xyz.order.domain.command.AddOrderItem;
+import com.xyz.order.domain.command.CompleteOrder;
+import com.xyz.order.domain.command.CreateOrder;
 import com.xyz.order.domain.model.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -27,7 +27,7 @@ public class OrderController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Order createOrder(@RequestBody @Valid OrderItemDto orderItemDto) {
-    return orderService.create(CreateOrderCommand.of(orderItemDto.getAmount()));
+    return orderService.create(CreateOrder.of(orderItemDto.getAmount()));
   }
 
   @PutMapping(
@@ -37,7 +37,7 @@ public class OrderController {
   public Order addItem(
           @PathVariable Long orderId, @RequestBody @Valid OrderItemDto orderItemDto) {
     return orderService.addItem(
-        AddOrderItemCommand.of(orderId, orderItemDto.getAmount()));
+        AddOrderItem.of(orderId, orderItemDto.getAmount()));
   }
 
   @PutMapping(
@@ -45,6 +45,6 @@ public class OrderController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Order completeOrder(@PathVariable Long orderId) {
-    return orderService.complete(CompleteOrderCommand.of(orderId));
+    return orderService.complete(CompleteOrder.of(orderId));
   }
 }

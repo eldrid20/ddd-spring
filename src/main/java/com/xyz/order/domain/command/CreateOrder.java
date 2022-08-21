@@ -5,7 +5,6 @@ import lombok.Value;
 import java.math.BigDecimal;
 
 @Value(staticConstructor = "of")
-public class AddOrderItemCommand {
-  Long orderId;
-  BigDecimal amount;
+public class CreateOrder {
+  private final BigDecimal amount;
 }

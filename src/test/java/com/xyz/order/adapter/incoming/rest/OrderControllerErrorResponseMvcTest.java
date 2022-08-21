@@ -6,8 +6,8 @@ import com.xyz.order.adapter.incoming.rest.dto.ErrorFieldResponseDto;
 import com.xyz.order.adapter.incoming.rest.dto.ErrorResponseDto;
 import com.xyz.order.adapter.incoming.rest.dto.OrderItemDto;
 import com.xyz.order.application.OrderService;
-import com.xyz.order.domain.command.AddOrderItemCommand;
-import com.xyz.order.domain.command.CompleteOrderCommand;
+import com.xyz.order.domain.command.AddOrderItem;
+import com.xyz.order.domain.command.CompleteOrder;
 import com.xyz.order.domain.exception.InvalidStateException;
 import com.xyz.order.domain.exception.OrderNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +103,7 @@ class OrderControllerErrorResponseMvcTest {
         String.format("Invalid Status: order ID : %d status is COMPLETED", ORDER_ID);
     Mockito.when(
             orderService.addItem(
-                AddOrderItemCommand.of(ORDER_ID, orderDto.getAmount())))
+                AddOrderItem.of(ORDER_ID, orderDto.getAmount())))
         .thenThrow(new InvalidStateException(expectedErrorMessage));
 
     final var response =
@@ -125,7 +125,7 @@ class OrderControllerErrorResponseMvcTest {
   @Test
   void completeOrderItem_WhenOrderIdNotFound_ShouldReturnHttp404() throws Exception {
     // given & when
-    Mockito.when(orderService.complete(CompleteOrderCommand.of(ORDER_ID)))
+    Mockito.when(orderService.complete(CompleteOrder.of(ORDER_ID)))
         .thenThrow(new OrderNotFoundException("Order ID :" + ORDER_ID + " not found"));
 
     final var response =
@@ -148,7 +148,7 @@ class OrderControllerErrorResponseMvcTest {
     // given & when
     final var expectedErrorMessage =
         String.format("Invalid Status: order ID : %d status is COMPLETED", ORDER_ID);
-    Mockito.when(orderService.complete(CompleteOrderCommand.of(ORDER_ID)))
+    Mockito.when(orderService.complete(CompleteOrder.of(ORDER_ID)))
         .thenThrow(new InvalidStateException(expectedErrorMessage));
 
     final var response =

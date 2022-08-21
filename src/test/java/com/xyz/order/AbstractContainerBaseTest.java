@@ -7,7 +7,7 @@ import org.testcontainers.containers.MySQLContainer;
 public abstract class AbstractContainerBaseTest {
 
   private static final String MYSQL_DOCKER_IMAGE = "mysql:8.0.24";
-  private static MySQLContainer<?> mySQLContainer;
+  private static final MySQLContainer<?> mySQLContainer;
 
   static {
     mySQLContainer = new MySQLContainer<>(MYSQL_DOCKER_IMAGE);

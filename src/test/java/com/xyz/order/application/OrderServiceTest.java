@@ -1,9 +1,9 @@
 package com.xyz.order.application;
 
 import com.xyz.order.AbstractContainerBaseTest;
-import com.xyz.order.domain.command.AddOrderItemCommand;
-import com.xyz.order.domain.command.CompleteOrderCommand;
-import com.xyz.order.domain.command.CreateOrderCommand;
+import com.xyz.order.domain.command.AddOrderItem;
+import com.xyz.order.domain.command.CompleteOrder;
+import com.xyz.order.domain.command.CreateOrder;
 import com.xyz.order.domain.exception.OrderNotFoundException;
 import com.xyz.order.domain.model.OrderStatus;
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +29,7 @@ class OrderServiceTest extends AbstractContainerBaseTest {
   @Test
   void createOrderByCommand_ShouldCreatedSuccessfully() {
     // given
-    final var command = CreateOrderCommand.of(BigDecimal.valueOf(10.00));
+    final var command = CreateOrder.of(BigDecimal.valueOf(10.00));
 
     // when
     final var order = orderService.create(command);
@@ -41,11 +41,11 @@ class OrderServiceTest extends AbstractContainerBaseTest {
   @Test
   void addOrderItemByCommand_ShouldBeAddedSuccessfully() {
     // given
-    final var createOrderCommand = CreateOrderCommand.of(BigDecimal.valueOf(10.00));
+    final var createOrderCommand = CreateOrder.of(BigDecimal.valueOf(10.00));
     final var order = orderService.create(createOrderCommand);
 
     // when
-    final var addItemCommand = AddOrderItemCommand.of(order.getId(), BigDecimal.valueOf(35.00));
+    final var addItemCommand = AddOrderItem.of(order.getId(), BigDecimal.valueOf(35.00));
     final var updatedOrder = orderService.addItem(addItemCommand);
 
     // then
@@ -55,7 +55,7 @@ class OrderServiceTest extends AbstractContainerBaseTest {
   @Test
   void addOrderItemByCommand_WhenInvalidOrderIdSupplied_ShouldThrowOrderNotFoundException() {
     // given
-    final var addOrderItemCommand = AddOrderItemCommand.of(-1L, BigDecimal.valueOf(12));
+    final var addOrderItemCommand = AddOrderItem.of(-1L, BigDecimal.valueOf(12));
     Assertions.assertThrows(
         OrderNotFoundException.class, () -> orderService.addItem(addOrderItemCommand));
   }
@@ -63,14 +63,14 @@ class OrderServiceTest extends AbstractContainerBaseTest {
   @Test
   void completeOrderByCommand_ShouldBeProceedSuccessfully() {
     // given
-    final var createOrderCommand = CreateOrderCommand.of(BigDecimal.valueOf(10.00));
+    final var createOrderCommand = CreateOrder.of(BigDecimal.valueOf(10.00));
     final var order = orderService.create(createOrderCommand);
 
     // when
-    final var addItemCommand = AddOrderItemCommand.of(order.getId(), BigDecimal.valueOf(35.00));
+    final var addItemCommand = AddOrderItem.of(order.getId(), BigDecimal.valueOf(35.00));
     final var updatedOrder = orderService.addItem(addItemCommand);
 
-    final var completeCommand = CompleteOrderCommand.of(updatedOrder.getId());
+    final var completeCommand = CompleteOrder.of(updatedOrder.getId());
     orderService.complete(completeCommand);
 
     // then
@@ -80,7 +80,7 @@ class OrderServiceTest extends AbstractContainerBaseTest {
   @Test
   void completeOrderByCommand_WhenInvalidOrderIdSupplied_ShouldThrowOrderNotFoundException() {
     // given
-    final var completeCommand = CompleteOrderCommand.of(-1L);
+    final var completeCommand = CompleteOrder.of(-1L);
     Assertions.assertThrows(
         OrderNotFoundException.class, () -> orderService.complete(completeCommand));
   }
